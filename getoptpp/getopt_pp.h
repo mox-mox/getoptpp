@@ -274,6 +274,35 @@ public:
     _DefValOption(char short_opt, const std::string& long_opt, T& target, const T& default_value)
         : BaseOption(short_opt, long_opt, target), default_value(default_value)
     {}
+    virtual _Option::Result operator()(ShortOptions& short_ops, LongOptions& long_ops, Token* first, std::ios::fmtflags flags) const
+    {
+        _Option::Result ret = BaseOption::operator()(short_ops, long_ops, first, flags);
+
+        if (ret == _Option::OptionNotFound)
+        {
+			this->target = default_value;
+            ret = _Option::OK;
+        }
+
+        return ret;
+    }
+};
+
+//mox
+template <class T, class BaseOption>
+class _DefValOption_func : public BaseOption
+{
+	T (*default_value_func)(void);
+public:
+
+    _DefValOption_func(const _DefValOption_func<T, BaseOption>& other)
+        : BaseOption(other), default_value_func(other.default_value_func)
+    {}
+
+
+    _DefValOption_func(char short_opt, const std::string& long_opt, T& target, T (*default_value_func)(void))
+        : BaseOption(short_opt, long_opt, target), default_value_func(default_value_func)
+    {}
 
     virtual _Option::Result operator()(ShortOptions& short_ops, LongOptions& long_ops, Token* first, std::ios::fmtflags flags) const
     {
@@ -281,13 +310,14 @@ public:
 
         if (ret == _Option::OptionNotFound)
         {
-            this->target = default_value;
+			this->target = (*default_value_func)();
             ret = _Option::OK;
         }
 
         return ret;
     }
 };
+
 
 template <class T>
 class _GlobalOption : public _Option
@@ -394,6 +424,16 @@ Option(char short_opt, const std::string& long_opt, T& target, const T& def)
 {
     return _DefValOption<T, _OptionT<T> >(short_opt, long_opt, target, def);
 }
+
+//mox
+// Default getter version
+template <class T>
+inline _DefValOption_func<T, _OptionT<T> >
+Option(char short_opt, const std::string& long_opt, T& target, T (*def)(void))
+{
+    return _DefValOption_func<T, _OptionT<T> >(short_opt, long_opt, target, def);
+}
+
 
 template <class T>
 inline _DefValOption<T, _OptionT<T> > Option(char short_opt, T& target, const T& def)
