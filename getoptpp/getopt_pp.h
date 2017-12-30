@@ -25,6 +25,8 @@ GetOpt_pp: Yet another C++ version of getopt.
 #include <sstream>
 #include <list>
 
+//#include <iostream> // mox: TODO remove
+
 /*
     DESIGN GOALS:
         - EASY to use
@@ -401,12 +403,14 @@ public:
 template <class T>
 inline _OptionT<T> Option(char short_opt, const std::string& long_opt, T& target)
 {
+	//std::cout<<"inline _OptionT<T> Option(char short_opt, const std::string& long_opt, T& target)"<<std::endl;
     return _OptionT<T>(short_opt, long_opt, target);
 }
 
 template <class T>
 inline _OptionT<T> Option(char short_opt, T& target)
 {
+	//std::cout<<"inline _OptionT<T> Option(char short_opt, T& target)"<<std::endl;
     return _OptionT<T>(short_opt, std::string(), target);
 }
 
@@ -414,6 +418,7 @@ inline _OptionT<T> Option(char short_opt, T& target)
 template <class T>
 inline _OptionT<T> Option(const std::string& long_opt, T& target)
 {
+	//std::cout<<"inline _OptionT<T> Option(const std::string& long_opt, T& target)"<<std::endl;
     return _OptionT<T>(_Option::NO_SHORT_OPT, long_opt, target);
 }
 
@@ -422,7 +427,18 @@ template <class T>
 inline _DefValOption<T, _OptionT<T> >
 Option(char short_opt, const std::string& long_opt, T& target, const T& def)
 {
+	//std::cout<<"Option(char short_opt, const std::string& long_opt, T& target, const T& def)"<<std::endl;
     return _DefValOption<T, _OptionT<T> >(short_opt, long_opt, target, def);
+}
+
+//mox
+// Defaulted version
+template <class T, class V>
+inline _DefValOption<T, _OptionT<T> >
+Option(char short_opt, const std::string& long_opt, T& target, const V& def)
+{
+	//std::cout<<"Default getter with other default type"<<std::endl;
+    return _DefValOption<T, _OptionT<T> >(short_opt, long_opt, target, static_cast<T>(def));
 }
 
 //mox
@@ -431,6 +447,7 @@ template <class T>
 inline _DefValOption_func<T, _OptionT<T> >
 Option(char short_opt, const std::string& long_opt, T& target, T (*def)(void))
 {
+	//std::cout<<"Option(char short_opt, const std::string& long_opt, T& target, T (*def)(void))"<<std::endl;
     return _DefValOption_func<T, _OptionT<T> >(short_opt, long_opt, target, def);
 }
 
@@ -438,6 +455,7 @@ Option(char short_opt, const std::string& long_opt, T& target, T (*def)(void))
 template <class T>
 inline _DefValOption<T, _OptionT<T> > Option(char short_opt, T& target, const T& def)
 {
+	//std::cout<<"inline _DefValOption<T, _OptionT<T> > Option(char short_opt, T& target, const T& def)"<<std::endl;
     return _DefValOption<T, _OptionT<T> >(short_opt, std::string(), target, def);
 }
 
@@ -446,6 +464,7 @@ template <class T>
 inline _DefValOption<T, _OptionT<T> >
 Option(const std::string& long_opt, T& target, const T& def)
 {
+	//std::cout<<"Option(const std::string& long_opt, T& target, const T& def)"<<std::endl;
     return _DefValOption<T, _OptionT<T> >(_Option::NO_SHORT_OPT, long_opt, target, def);
 }
 
@@ -453,11 +472,13 @@ Option(const std::string& long_opt, T& target, const T& def)
 inline _DefValOption<std::string, _OptionT<std::string> >
 Option(char short_opt, const std::string& long_opt, std::string& target, const char* def)
 {
+	//std::cout<<"Option(char short_opt, const std::string& long_opt, std::string& target, const char* def)"<<std::endl;
     return _DefValOption<std::string, _OptionT<std::string> >(short_opt, long_opt, target, def);
 }
 
 inline _OptionT<std::string> Option(char short_opt, std::string& target, const char* def)
 {
+	//std::cout<<"inline _OptionT<std::string> Option(char short_opt, std::string& target, const char* def)"<<std::endl;
     return _DefValOption<std::string, _OptionT<std::string> >(short_opt, std::string(), target, def);
 }
 
@@ -465,6 +486,7 @@ inline _OptionT<std::string> Option(char short_opt, std::string& target, const c
 inline _DefValOption<std::string, _OptionT<std::string> >
 Option(const std::string& long_opt, std::string& target, const char* def)
 {
+	//std::cout<<"Option(const std::string& long_opt, std::string& target, const char* def)"<<std::endl;
     return _DefValOption<std::string, _OptionT<std::string> >(_Option::NO_SHORT_OPT, long_opt, target, def);
 }
 
